@@ -1,33 +1,60 @@
 package com.ceh.sns.model.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.ceh.sns.model.UserRole;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+
+@Getter
+@Setter
 @Entity
-@Table
+@Table(name = "\"user\"")
+@NoArgsConstructor
 public class UserEntity {
 
     @Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id = null;
 
-    @Column(name="user_name")
+    @Column(name = "user_name", unique = true)
     private String userName;
 
-    public Object getPassword() {
+    private String password;
 
-        Object object = new Object();
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER;
 
-        return object;
+    @Column(name = "registered_at")
+    private Timestamp registeredAt;
+
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
+    @Column(name = "removed_at")
+    private Timestamp removedAt;
+
+
+    @PrePersist
+    void registeredAt() {
+        this.registeredAt = Timestamp.from(Instant.now());
     }
 
-    public void setId(int i) {
+    @PreUpdate
+    void updatedAt() {
+        this.updatedAt = Timestamp.from(Instant.now());
     }
 
-    public void setUserName(String userName) {
+    public static UserEntity of(String userName, String encodedPwd) {
+        UserEntity entity = new UserEntity();
+        entity.setUserName(userName);
+        entity.setPassword(encodedPwd);
+        return entity;
     }
 
-    public void setPassword(String password) {
-    }
 }
