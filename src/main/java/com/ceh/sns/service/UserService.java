@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService{
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
